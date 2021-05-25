@@ -332,13 +332,16 @@
                     <a href="#scheduling-jobs" class="toc-h2 toc-link" data-title="Scheduling Jobs">Scheduling Jobs</a>
                   </li>
                   <li>
+                    <a href="#deleting-jobs" class="toc-h2 toc-link" data-title="Deleting Jobs">Deleting Jobs</a>
+                  </li>
+                  <li>
                     <a href="#running-workers" class="toc-h2 toc-link" data-title="Running Workers">Running Workers</a>
                   </li>
               </ul>
           </li>
       </ul>
         <ul class="toc-footer">
-            <li><a href='/home'>Yerbie Home</a></li>
+            <li><a href='https://www.yerbie.dev'>Yerbie Home</a></li>
         </ul>
     </div>
     <div class="page-wrapper">
@@ -374,7 +377,7 @@
     <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">yerbie</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">yerbie</span><span class="o">-</span><span class="n">java</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">5</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
     <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependencies</span><span class="o">&gt;</span>
 </code></pre></div><h2 id='job-data'>Job Data</h2>
@@ -445,6 +448,14 @@ This tells Yerbie to make <code>TestJobData</code> available on <code>high_prior
 <span class="kn">import</span> <span class="nn">yerbie.serde.JSONJobData</span><span class="o">;</span>
 
 <span class="n">yerbieClient</span><span class="o">.</span><span class="na">scheduleJob</span><span class="o">(</span><span class="mi">10</span><span class="o">,</span> <span class="s">"high_priority_queue"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TestJobData</span><span class="o">(</span><span class="s">"naota_nandaba"</span><span class="o">));</span>
+</code></pre></div><h2 id='deleting-jobs'>Deleting Jobs</h2>
+<p>To delete a job that is going to be executed, Yerbie allows you to delete a job via its job token. A job that is already enqueued into a queue cannot be deleted.
+The client returns <code>true</code> if succesful, or <code>false</code> if it can&#39;t find the job (or it has already been enqueued).</p>
+
+<blockquote>
+<p>To delete a job with token <code>aa555552-c21c-4d0a-a7a0-713f2b02b169</code>:</p>
+</blockquote>
+<div class="highlight"><pre class="highlight java tab-java"><code><span class="kt">boolean</span> <span class="n">result</span> <span class="o">=</span> <span class="n">yerbieClient</span><span class="o">.</span><span class="na">deleteJob</span><span class="o">(</span><span class="s">"a555552-c21c-4d0a-a7a0-713f2b02b169"</span><span class="o">);</span>
 </code></pre></div><h2 id='running-workers'>Running Workers</h2>
 <p>This tells the library to start polling Yerbie for available work.</p>
 
@@ -472,7 +483,7 @@ This tells Yerbie to make <code>TestJobData</code> available on <code>high_prior
 <span class="n">yerbieConsumer</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
 </code></pre></div>
 <blockquote>
-<p>Your worker will now poll on the <code>high_priority_queue</code>. When it receives a <code>TestJobData</code>, it create a new instance of <code>TestJob</code> and will invoke the <code>run</code> function with the job data.</p>
+<p>Your worker will now poll on the <code>high_priority_queue</code>. When it receives a <code>TestJobData</code>, it creates a new instance of <code>TestJob</code> and will invoke the <code>run</code> function with the job data.</p>
 </blockquote>
 
       </div>
