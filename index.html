@@ -352,13 +352,13 @@
 
 <p>To initiate a job, a client sends a request to Yerbie indicating a queue, data and delay, and Yerbie then makes that data available on the queue after the specified delay.</p>
 
-<p>A worker then runs a job associated with the data when it is available on the queue.</p>
+<p>A worker polls, and runs a job associated with the data when it is available on the queue.</p>
 
 <p>Currently, Yerbie has a Java client library with more language support planned.</p>
 <h1 id='quick-start'>Quick Start</h1><h3 id='prerequisites'>Prerequisites</h3>
 <ul>
 <li>Docker</li>
-<li>Redis</li>
+<li>Redis (&gt;= 3.0)</li>
 </ul>
 
 <ol>
@@ -366,18 +366,19 @@
 <li>Start the Yerbie server with <code>docker run yerbie/yerbie-server</code>.</li>
 </ol>
 
-<p>Yerbie assumes Redis is accessible on <code>localhost</code> port <code>6379</code> and will start listening for requests on port &#39;5865&#39;.</p>
+<p>Yerbie assumes Redis is accessible on <code>localhost</code> port <code>6379</code> and will start listening for requests on port <code>5865</code>.</p>
 <h2 id='library'>Library</h2>
 <p>The client library exposes an easy to use interface to send requests to Yerbie and to run jobs from a queue when they become available.</p>
 
 <blockquote>
 <p>Add the Yerbie client library as a dependency with the latest version:</p>
 </blockquote>
-<div class="highlight"><pre class="highlight java tab-java"><code><span class="o">&lt;</span><span class="n">dependencies</span><span class="o">&gt;</span>
+<div class="highlight"><pre class="highlight java tab-java"><code><span class="c1">// Yerbie is available on the Maven Central Repository</span>
+<span class="o">&lt;</span><span class="n">dependencies</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">yerbie</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">yerbie</span><span class="o">-</span><span class="n">java</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="o">.</span><span class="mi">8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
     <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependencies</span><span class="o">&gt;</span>
 </code></pre></div><h2 id='job-data'>Job Data</h2>
