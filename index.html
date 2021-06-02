@@ -339,6 +339,17 @@
                   </li>
               </ul>
           </li>
+          <li>
+            <a href="#retrying" class="toc-h1 toc-link" data-title="Retrying">Retrying</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#fixed-interval-retry-policy" class="toc-h2 toc-link" data-title="Fixed Interval Retry Policy">Fixed Interval Retry Policy</a>
+                  </li>
+                  <li>
+                    <a href="#exponential-retry-policy" class="toc-h2 toc-link" data-title="Exponential Retry Policy">Exponential Retry Policy</a>
+                  </li>
+              </ul>
+          </li>
       </ul>
         <ul class="toc-footer">
             <li><a href='https://www.yerbie.dev'>Yerbie Home</a></li>
@@ -376,14 +387,14 @@
 <div class="highlight"><pre class="highlight java tab-java"><code><span class="c1">// Yerbie is available on the Maven Central Repository</span>
 <span class="o">&lt;</span><span class="n">dependencies</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">yerbie</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">dev</span><span class="o">.</span><span class="na">yerbie</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
         <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">yerbie</span><span class="o">-</span><span class="n">java</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">1.1</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
     <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependencies</span><span class="o">&gt;</span>
 </code></pre></div><h2 id='job-data'>Job Data</h2>
 <p>In order to store relevant data that your job can access when it runs, you need to create a serializable representation of that data in JSON.
-The maximum amount data size is 512 megabytes.</p>
+The maximum data size is 512 megabytes.</p>
 
 <blockquote>
 <p>Create your own job data:</p>
@@ -435,8 +446,9 @@ The maximum amount data size is 512 megabytes.</p>
 <span class="c1">// The client takes in an ObjectMapper to perform serialization and deserialization of job data.</span>
 <span class="nc">YerbieClient</span> <span class="n">yerbieClient</span> <span class="o">=</span> <span class="n">clientProvider</span><span class="o">.</span><span class="na">initializeClient</span><span class="o">(</span><span class="k">new</span> <span class="nc">ObjectMapper</span><span class="o">());</span>
 </code></pre></div><h2 id='scheduling-jobs'>Scheduling Jobs</h2>
-<p>At its simplest, Yerbie takes a delay in seconds, a queue name, and an instance of a job data.
-This tells Yerbie to make <code>TestJobData</code> available on <code>high_priority_queue</code> in 10 seconds.</p>
+<p>At its simplest, Yerbie takes a delay in seconds, a queue name, and an instance of a job data.</p>
+
+<p>The example tells Yerbie to make <code>TestJobData</code> available on <code>high_priority_queue</code> in 10 seconds.</p>
 
 <p>Yerbie can easily handle delays of days or even weeks, but be cognizant that any changes to <code>TestJobData</code> will need to support old versions of the data.</p>
 
@@ -448,7 +460,7 @@ This tells Yerbie to make <code>TestJobData</code> available on <code>high_prior
 <div class="highlight"><pre class="highlight java tab-java"><code><span class="kn">import</span> <span class="nn">your.org.jobdata.TestJobData</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">yerbie.serde.JSONJobData</span><span class="o">;</span>
 
-<span class="n">yerbieClient</span><span class="o">.</span><span class="na">scheduleJob</span><span class="o">(</span><span class="mi">10</span><span class="o">,</span> <span class="s">"high_priority_queue"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TestJobData</span><span class="o">(</span><span class="s">"naota_nandaba"</span><span class="o">));</span>
+<span class="n">yerbieClient</span><span class="o">.</span><span class="na">scheduleJob</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofSeconds</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="s">"high_priority_queue"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TestJobData</span><span class="o">(</span><span class="s">"naota_nandaba"</span><span class="o">));</span>
 </code></pre></div><h2 id='deleting-jobs'>Deleting Jobs</h2>
 <p>To delete a job that is going to be executed, Yerbie allows you to delete a job via its job token. A job that is already enqueued into a queue cannot be deleted.
 The client returns <code>true</code> if succesful, or <code>false</code> if it can&#39;t find the job (or it has already been enqueued).</p>
@@ -486,7 +498,27 @@ The client returns <code>true</code> if succesful, or <code>false</code> if it c
 <blockquote>
 <p>Your worker will now poll on the <code>high_priority_queue</code>. When it receives a <code>TestJobData</code>, it creates a new instance of <code>TestJob</code> and will invoke the <code>run</code> function with the job data.</p>
 </blockquote>
+<h1 id='retrying'>Retrying</h1>
+<p>To initiate a job, the client library requests a job from a specific queue. Once popped, the library has 10 seconds to send an ack to Yerbie to acknowledge that it successfully ran the job. In the case where it doesn&#39;t run the job successfully, Yerbie will make the job available again.</p>
 
+<p>In the case where an exception is thrown, the client library will re-queue the job according to the job&#39;s retry policy.</p>
+
+<p>If you don&#39;t specify a retry policy when creating a job, Yerbie uses the default of a fixed interval 30 second retry policy with 4 total retries. This means that the job will run unsuccessfully at most 5 times (since the first run is not a retry).</p>
+<h2 id='fixed-interval-retry-policy'>Fixed Interval Retry Policy</h2>
+<p>This retry policy will make the job available on the queue in 30 seconds, and will retry 4 times, each waiting 30 seconds after the initial run if the job is still unsuccessful.</p>
+<div class="highlight"><pre class="highlight java tab-java"><code><span class="kn">import</span> <span class="nn">yerbie.job.FixedRetryPolicy</span><span class="o">;</span>
+
+<span class="kt">long</span> <span class="n">initialDelaySeconds</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">totalRetries</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+<span class="n">yerbieClient</span><span class="o">.</span><span class="na">scheduleJob</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofSeconds</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="s">"high_priority_queue"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TestJobData</span><span class="o">(</span><span class="s">"naota_nandaba"</span><span class="o">),</span> <span class="k">new</span> <span class="nc">FixedRetryPolicy</span><span class="o">(</span><span class="n">initialDelaySeconds</span><span class="o">,</span> <span class="n">totalRetries</span><span class="o">));</span>
+</code></pre></div><h2 id='exponential-retry-policy'>Exponential Retry Policy</h2>
+<p>This retry policy will make the job available after an exception in 5 seconds, then 25, then 125, then 625 before stopping.</p>
+<div class="highlight"><pre class="highlight java tab-java"><code><span class="kn">import</span> <span class="nn">yerbie.job.ExponentialRetryPolicy</span><span class="o">;</span>
+
+<span class="kt">long</span> <span class="n">initialDelaySeconds</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">totalRetries</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+<span class="n">yerbieClient</span><span class="o">.</span><span class="na">scheduleJob</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofSeconds</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="s">"high_priority_queue"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TestJobData</span><span class="o">(</span><span class="s">"naota_nandaba"</span><span class="o">),</span> <span class="k">new</span> <span class="nc">ExponentialRetryPolicy</span><span class="o">(</span><span class="n">initialDelaySeconds</span><span class="o">,</span> <span class="n">totalRetries</span><span class="o">));</span>
+</code></pre></div>
       </div>
       <div class="dark-box">
           <div class="lang-selector">
